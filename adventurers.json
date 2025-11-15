@@ -1,0 +1,14 @@
+{
+  "adventurers": [
+    {
+      "name": "eggbert",
+      "type": "Warrior",
+      "level": 1,
+      "experience": 50,
+      "health": 50,
+      "defence": 10,
+      "items": [],
+      "value": "eggbert"
+    }
+  ]
+}
