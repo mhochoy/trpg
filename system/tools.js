@@ -26,6 +26,9 @@ export async function saveAdventurer(adventurer) {
     else {
         let data = saveMap["adventurers"];
         const oldSave = await getAdventurerData(adventurer.name);
+
+        console.log("SYS:   Saving...");
+
         if (oldSave != undefined) {
             const decision = await select({
                 message: "A save has been found for this adventurer. Overwrite?",
