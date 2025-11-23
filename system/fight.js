@@ -33,6 +33,7 @@ export default async function fight(adventurer, opponent) {
         console.log("INFO:  " + adventurer.name + " wins!");
         adventurer.giveExperience(expGain);
         console.log("INFO:  " + "You've gained " + expGain + " experience!");
+        adventurer.postMatch();
         return true;
     }
     else if (adventurer.health < opponent.health) {
@@ -77,6 +78,11 @@ async function handleDecision(choice, adventurer, opponent) {
 
         determineAttackVs(opponentChoice, adventurer, attack, opponent);
     }
+    else if (choice == "2") {
+        const opponentChoice = getBotDecision(1, 2);
+        
+        determineDefendVs(opponentChoice, adventurer, opponent)
+    }
     else if (choice == "4") {
         adventurer.health = 0;
     }
@@ -84,87 +90,127 @@ async function handleDecision(choice, adventurer, opponent) {
 
 async function determineAttackVs(opponentChoice, adventurer, attack, opponent) {
     if (opponentChoice == 1) {
-            const opponentAttack = opponent.attacks[getBotDecision(0, opponent.attacks.length - 1)];
-            console.log("OPP:  " + opponent.name + " has chosen to attack using " + opponentAttack.name);
-            if (attack.damage > opponentAttack.damage) {
-                let difference = attack.damage - opponentAttack.damage;
+        const opponentAttack = opponent.attacks[getBotDecision(0, opponent.attacks.length - 1)];
+        console.log("OPP:  " + opponent.name + " has chosen to attack using " + opponentAttack.name);
+        if (attack.damage > opponentAttack.damage) {
+            let difference = attack.damage - opponentAttack.damage;
 
-                const critResult = generateRandomNumber(0, 100);
+            const critResult = generateRandomNumber(0, 100);
 
-                if (critResult <= attack.criticalChance) {
-                    console.log("EFF:      " + "CRITICAL DAMAGE");
-                    difference = difference * 2;
-                }
-                
-                console.log("RES:      " + "You've damaged " + opponent.name + " for " + difference + " HP!");
-
-                if (attack.stinging && opponent.effectedBy == null) {
-                    opponent.effectedBy = attack;
-                }
-
-                opponent.takeDamage(difference);
+            if (critResult <= attack.criticalChance) {
+                console.log("EFF:      " + "CRITICAL DAMAGE");
+                difference = difference * 2;
             }
-            else if (attack.damage < opponentAttack.damage) {
-                let difference = opponentAttack.damage - attack.damage;
+            
+            console.log("RES:      " + "You've damaged " + opponent.name + " for " + difference + " HP!");
 
-                const critResult = generateRandomNumber(0, 100);
-
-                if (critResult <= opponentAttack.criticalChance) {
-                    console.log("EFF:      " + "CRITICAL DAMAGE");
-                    difference = difference * 2;
-                }
-                
-                console.log("RES:      " + "You've taken " + difference + " HP damage!");
-
-                if (opponentAttack.stinging && adventurer.effectedBy == null) {
-                    adventurer.effectedBy = opponentAttack;
-                }
-
-                adventurer.takeDamage(difference);
+            if (attack.stinging && opponent.effectedBy == null) {
+                opponent.effectedBy = attack;
             }
-            else {
-                console.log("RES:      " + "---CLASH!---");
-                console.log("RES:      " + "No damage given!");
-                console.log();
-            }
+
+            opponent.takeDamage(difference);
         }
-        else if (opponentChoice == 2) {
-            console.log("OPP:  " + opponent.name + " has chosen to defend.");
-            if (attack.damage > opponent.defence) {
-                let difference = attack.damage - opponent.defence;
+        else if (attack.damage < opponentAttack.damage) {
+            let difference = opponentAttack.damage - attack.damage;
 
-                const critResult = generateRandomNumber(0, 100);
+            const critResult = generateRandomNumber(0, 100);
 
-                if (critResult <= attack.criticalChance) {
-                    console.log("EFF:      " + "CRITICAL DAMAGE");
-                    difference = difference * 2;
-                }
-                
-                console.log("RES:      " + "You've damaged " + opponent.name + " for " + difference + " HP!");
-
-                if (attack.stinging && opponent.effectedBy == null) {
-                    opponent.effectedBy = attack;
-                }
-
-                opponent.takeDamage(difference);
+            if (critResult <= opponentAttack.criticalChance) {
+                console.log("EFF:      " + "CRITICAL DAMAGE");
+                difference = difference * 2;
             }
-            else if (attack.damage < opponent.defence) {
-                const difference = opponent.defence - attack.damage;
-                
-                console.log("RES:      " + "You've taken " + difference + " HP damage!");
+            
+            console.log("RES:      " + "You've taken " + difference + " HP damage!");
 
-                adventurer.takeDamage(difference);
+            if (opponentAttack.stinging && adventurer.effectedBy == null) {
+                adventurer.effectedBy = opponentAttack;
             }
-            else {
-                console.log("RES:      " + "---CLASH!---");
-                console.log("RES:      " + "No damage given!");
-                console.log();
-            }
+
+            adventurer.takeDamage(difference);
         }
         else {
-            console.log("Unhandled Condition.");
-            console.log("Opponent choice was: " + opponentChoice);
+            console.log("RES:      " + "---CLASH!---");
+            console.log("RES:      " + "No damage given!");
+            console.log();
         }
+    }
+    else if (opponentChoice == 2) {
+        console.log("OPP:  " + opponent.name + " has chosen to defend.");
+        if (attack.damage > opponent.defence) {
+            let difference = attack.damage - opponent.defence;
+
+            const critResult = generateRandomNumber(0, 100);
+
+            if (critResult <= attack.criticalChance) {
+                console.log("EFF:      " + "CRITICAL DAMAGE");
+                difference = difference * 2;
+            }
+            
+            console.log("RES:      " + "You've damaged " + opponent.name + " for " + difference + " HP!");
+
+            if (attack.stinging && opponent.effectedBy == null) {
+                opponent.effectedBy = attack;
+            }
+
+            opponent.takeDamage(difference);
+        }
+        else if (attack.damage < opponent.defence) {
+            const difference = opponent.defence - attack.damage;
+            
+            console.log("RES:      " + "You've taken " + difference + " HP damage!");
+
+            adventurer.takeDamage(difference);
+        }
+        else {
+            console.log("RES:      " + "---CLASH!---");
+            console.log("RES:      " + "No damage given!");
+            console.log();
+        }
+    }
+    else {
+        console.log("Unhandled Condition.");
+        console.log("Opponent choice was: " + opponentChoice);
+    }
+}
+
+async function determineDefendVs(opponentChoice, adventurer, opponent) {
+    if (opponentChoice == 1) {
+        const opponentAttack = opponent.attacks[getBotDecision(0, opponent.attacks.length - 1)];
+        console.log("OPP:  " + opponent.name + " has chosen to attack using " + opponentAttack.name);
+        if (adventurer.defence > opponentAttack.damage) {
+            console.log(`RES:       ${opponentAttack.name} blocked!`);
+        }
+        else if (adventurer.defence < opponentAttack.damage) {
+            let difference = adventurer.defence - opponentAttack.damage;
+
+            const critResult = generateRandomNumber(0, 100);
+
+            if (critResult <= opponentAttack.criticalChance) {
+                console.log("EFF:      " + "CRITICAL DAMAGE");
+                difference = difference * 2;
+            }
+            
+            console.log("RES:      " + "You've taken " + difference + " HP damage!");
+
+            if (opponentAttack.stinging && adventurer.effectedBy == null) {
+                adventurer.effectedBy = opponentAttack;
+            }
+
+            adventurer.takeDamage(Math.abs(difference));
+        }
+        else {
+            console.log("RES:      " + "---CLASH!---");
+            console.log("RES:      " + "No damage given!");
+            console.log();
+        }
+    }
+    else if (opponentChoice == 2) {
+        console.log(`RES:       Both have chosen to defend! Pass!`);
+    }
+    else {
+        console.log("Unhandled Condition.");
+        console.log("Opponent choice was: " + opponentChoice);
+    }
 }
 
 async function selectPlayerAttack(adventurer) {

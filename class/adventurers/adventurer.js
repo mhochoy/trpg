@@ -35,6 +35,10 @@ export default class Adventurer {
         this.handleBleedingEffect();
     }
 
+    postMatch() {
+        this.setLevel(this.experience);
+    }
+
     handleBleedingEffect() {
         if (this.effectedBy && this.effectedTime <= this.effectedBy.stingingRounds) {
             if (this.effectedTime == 0) {
@@ -96,6 +100,15 @@ export default class Adventurer {
         }
 
         level += 1;
+    }
+
+    setLevel(experience) {
+        const level = 1 + Math.floor(experience / 100);
+
+        if (this.level != level && level != 0) {
+            this.level = level;
+            console.log(`INFO:  You're now level ${level}!`);
+        }
     }
 
     print() {
